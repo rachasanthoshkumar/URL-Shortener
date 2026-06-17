@@ -17,33 +17,45 @@ export function SignInWithGithub({
   size?: "md" | "lg";
 }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   return (
-    <button
-      className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-lg bg-[#171717] font-semibold text-white shadow-sm transition hover:bg-[#2a2a2a] disabled:cursor-not-allowed disabled:bg-[#a7a7a7]",
-        size === "lg" ? "h-12 px-5 text-sm" : "h-10 px-4 text-sm",
-        fullWidth && "w-full",
-      )}
-      disabled={isLoading}
-      onClick={async () => {
-        setIsLoading(true);
-        const response = await authClient.signIn.social({
-          provider: "github",
-          callbackURL: "/dashboard",
-        });
+    <div className={cn(fullWidth && "w-full")}>
+      <button
+        className={cn(
+          "inline-flex items-center justify-center gap-2 rounded-lg bg-[#171717] font-semibold text-white shadow-sm transition hover:bg-[#2a2a2a] disabled:cursor-not-allowed disabled:bg-[#a7a7a7]",
+          size === "lg" ? "h-12 px-5 text-sm" : "h-10 px-4 text-sm",
+          fullWidth && "w-full",
+        )}
+        disabled={isLoading}
+        onClick={async () => {
+          setErrorMessage("");
+          setIsLoading(true);
 
-        if (response.data?.url) {
-          window.location.href = response.data.url;
-          return;
-        }
+          try {
+            const response = await authClient.signIn.social({
+              provider: "github",
+              callbackURL: "/dashboard",
+            });
 
-        setIsLoading(false);
-      }}
-      type="button"
-    >
-      {isLoading ? <Loader2 className="animate-spin" size={18} /> : <LogIn size={18} />}
-      {isLoading ? loadingLabel : label}
-    </button>
+            if (response.data?.url) {
+              window.location.href = response.data.url;
+              return;
+            }
+
+            setErrorMessage(response.error?.message ?? "Unable to start GitHub sign in.");
+          } catch {
+            setErrorMessage("Unable to reach the auth server. Check the deployment URL settings.");
+          } finally {
+            setIsLoading(false);
+          }
+        }}
+        type="button"
+      >
+        {isLoading ? <Loader2 className="animate-spin" size={18} /> : <LogIn size={18} />}
+        {isLoading ? loadingLabel : label}
+      </button>
+      {errorMessage ? <p className="mt-3 text-sm text-red-600">{errorMessage}</p> : null}
+    </div>
   );
 }
