@@ -64,11 +64,13 @@ export default async function Home() {
               key={feature.title}
               className="rounded-xl border border-[#eeeeee] bg-white/95 p-4 text-left shadow-sm"
             >
-              <div className="grid h-8 w-8 place-items-center rounded-lg bg-[#f7f7f7] text-[#5f5f5f]">
-                <feature.icon size={17} />
+              <div className="flex items-center gap-3">
+                <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[#f7f7f7] text-[#5f5f5f]">
+                  <feature.icon size={17} />
+                </div>
+                <h2 className="text-sm font-bold text-[#2b2b2b]">{feature.title}</h2>
               </div>
-              <h2 className="mt-4 text-sm font-bold text-[#2b2b2b]">{feature.title}</h2>
-              <p className="mt-2 text-xs leading-5 text-[#9a9a9a]">{feature.description}</p>
+              <p className="mt-3 text-xs leading-5 text-[#9a9a9a]">{feature.description}</p>
             </div>
           ))}
         </div>
