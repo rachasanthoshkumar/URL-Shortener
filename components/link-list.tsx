@@ -18,15 +18,20 @@ export type DashboardLink = {
 };
 
 type LinkListProps = {
+  isSearching?: boolean;
   links: DashboardLink[];
 };
 
-export function LinkList({ links }: LinkListProps) {
+export function LinkList({ isSearching = false, links }: LinkListProps) {
   if (links.length === 0) {
     return (
       <div className="rounded-xl border border-[#eeeeee] bg-white p-6 text-center shadow-sm sm:p-10">
-        <p className="text-base font-bold">No links yet</p>
-        <p className="mt-2 text-sm text-[#9a9a9a]">Create your first short link from the card on the left.</p>
+        <p className="text-base font-bold">{isSearching ? "No matching links" : "No links yet"}</p>
+        <p className="mt-2 text-sm text-[#9a9a9a]">
+          {isSearching
+            ? "Try another search term or clear the search to view all links."
+            : "Create your first short link from the card on the left."}
+        </p>
       </div>
     );
   }
