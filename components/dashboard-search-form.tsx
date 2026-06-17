@@ -27,6 +27,14 @@ export function DashboardSearchForm({ query }: { query: string }) {
     navigateWithQuery(inputRef.current?.value ?? "", "search");
   }
 
+  function handleClear() {
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+
+    navigateWithQuery("", "clear");
+  }
+
   return (
     <form
       action="/dashboard"
@@ -54,7 +62,7 @@ export function DashboardSearchForm({ query }: { query: string }) {
           aria-label={isPending && pendingAction === "clear" ? "Clearing search" : "Clear search"}
           className="grid h-10 w-10 shrink-0 place-items-center rounded-lg text-[#8f8f8f] transition hover:bg-[#f6f6f6] hover:text-[#171717] disabled:cursor-wait disabled:opacity-70"
           disabled={isPending}
-          onClick={() => navigateWithQuery("", "clear")}
+          onClick={handleClear}
           title="Clear search"
           type="button"
         >
