@@ -36,7 +36,7 @@ export function QuickShortenForm({
       </label>
 
       <div className="mt-3 flex flex-col gap-2.5 sm:flex-row sm:items-center">
-        <span className="shrink-0 text-left text-xs text-[#8a8a8a]">{baseUrl.replace(/\/$/, "")}/</span>
+        <span className="shrink-0 text-left text-xs text-[#8a8a8a]">{baseUrl}/</span>
         <input
           className="h-9 min-w-0 flex-1 rounded-lg border border-[#e6e6e6] bg-white px-3.5 text-xs text-[#222222] shadow-sm outline-none transition placeholder:text-[#a3a3a3] focus:border-[#cfcfcf]"
           name="customSlug"

@@ -5,6 +5,7 @@ import { ArrowLeft, ExternalLink, MousePointerClick } from "lucide-react";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { getAppBaseUrl } from "@/lib/app-url";
 import { CopyLinkButton } from "@/components/copy-link-button";
 import { DownloadQrButton } from "@/components/download-qr-button";
 import { prisma } from "@/lib/prisma";
@@ -49,8 +50,8 @@ export default async function LinkDetailPage({ params }: LinkDetailPageProps) {
     notFound();
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
-  const shortUrl = `${baseUrl.replace(/\/$/, "")}/${link.slug}`;
+  const baseUrl = getAppBaseUrl();
+  const shortUrl = `${baseUrl}/${link.slug}`;
   const qrCodeDataUrl = await QRCode.toDataURL(shortUrl, {
     errorCorrectionLevel: "H",
     margin: 2,

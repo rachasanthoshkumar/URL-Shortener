@@ -1,6 +1,7 @@
 import { LinkIcon, MousePointerClick, QrCode, Sparkles, UserRound } from "lucide-react";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+import { getAppBaseUrl } from "@/lib/app-url";
 import { QuickShortenForm } from "@/components/quick-shorten-form";
 import { SiteHeader } from "@/components/site-header";
 
@@ -31,7 +32,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function Home() {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
+  const baseUrl = getAppBaseUrl();
   const session = await auth.api.getSession({
     headers: await headers(),
   });

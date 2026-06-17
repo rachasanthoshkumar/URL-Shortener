@@ -4,6 +4,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { getAppBaseUrl } from "@/lib/app-url";
 import { LinkList, type DashboardLink } from "@/components/link-list";
 import { prisma } from "@/lib/prisma";
 import { QuickShortenForm } from "@/components/quick-shorten-form";
@@ -23,7 +24,7 @@ export default async function DashboardPage() {
   }
 
   const userId = session.user.id;
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
+  const baseUrl = getAppBaseUrl();
 
   const links = await prisma.link.findMany({
     where: {
@@ -44,7 +45,7 @@ export default async function DashboardPage() {
 
   const dashboardLinks: DashboardLink[] = await Promise.all(
     links.map(async (link) => {
-      const shortUrl = `${baseUrl.replace(/\/$/, "")}/${link.slug}`;
+      const shortUrl = `${baseUrl}/${link.slug}`;
 
       return {
         id: link.id,
