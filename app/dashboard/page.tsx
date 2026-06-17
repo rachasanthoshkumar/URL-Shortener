@@ -1,11 +1,11 @@
 import QRCode from "qrcode";
-import Form from "next/form";
-import { ArrowLeft, Search, Sparkles, X } from "lucide-react";
+import { ArrowLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { getAppBaseUrl } from "@/lib/app-url";
+import { DashboardSearchForm } from "@/components/dashboard-search-form";
 import { LinkList, type DashboardLink } from "@/components/link-list";
 import { prisma } from "@/lib/prisma";
 import { QuickShortenForm } from "@/components/quick-shorten-form";
@@ -132,39 +132,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                 </span>
               </div>
 
-              <Form action="/dashboard" className="flex w-full items-center gap-2 lg:max-w-sm">
-                <label className="relative min-w-0 flex-1">
-                  <Search
-                    className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#a3a3a3]"
-                    size={15}
-                  />
-                  <input
-                    className="h-10 w-full rounded-lg border border-[#e6e6e6] bg-white pl-10 pr-3 text-sm text-[#222222] shadow-sm outline-none transition placeholder:text-[#a3a3a3] focus:border-[#cfcfcf]"
-                    defaultValue={searchQuery}
-                    name="q"
-                    placeholder="Search links..."
-                    type="search"
-                  />
-                </label>
-                {searchQuery ? (
-                  <Link
-                    aria-label="Clear search"
-                    className="grid h-10 w-10 shrink-0 place-items-center rounded-lg text-[#8f8f8f] transition hover:bg-[#f6f6f6] hover:text-[#171717]"
-                    href="/dashboard"
-                    title="Clear search"
-                  >
-                    <X size={18} />
-                  </Link>
-                ) : null}
-                <button
-                  className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-[#171717] text-white transition hover:bg-[#2a2a2a]"
-                  type="submit"
-                  aria-label="Search links"
-                  title="Search links"
-                >
-                  <Search size={17} />
-                </button>
-              </Form>
+              <DashboardSearchForm query={searchQuery} />
             </div>
             <LinkList links={dashboardLinks} isSearching={Boolean(searchQuery)} />
           </section>
