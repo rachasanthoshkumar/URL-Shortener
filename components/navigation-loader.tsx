@@ -5,6 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { RouteLoadingOverlay } from "@/components/route-loading-overlay";
 
 const NAVIGATION_START_EVENT = "short-in:navigation-start";
+const MIN_VISIBLE_MS = 450;
 const MAX_VISIBLE_MS = 8000;
 
 export function startRouteLoading() {
@@ -18,29 +19,63 @@ export function NavigationLoader() {
     () => `${pathname}?${searchParams.toString()}`,
     [pathname, searchParams],
   );
-  const [pendingRouteKey, setPendingRouteKey] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const latestRouteKeyRef = useRef(routeKey);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isLoading = pendingRouteKey === routeKey;
+  const startedAtRef = useRef(0);
+  const startedRouteKeyRef = useRef(routeKey);
+  const maxTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const minTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     latestRouteKeyRef.current = routeKey;
   }, [routeKey]);
 
   useEffect(() => {
-    function clearSafetyTimeout() {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
+    if (!isLoading || routeKey === startedRouteKeyRef.current) {
+      return;
+    }
+
+    const elapsed = Date.now() - startedAtRef.current;
+    const remaining = Math.max(MIN_VISIBLE_MS - elapsed, 0);
+
+    if (minTimerRef.current) {
+      clearTimeout(minTimerRef.current);
+    }
+
+    minTimerRef.current = setTimeout(() => {
+      setIsLoading(false);
+      minTimerRef.current = null;
+    }, remaining);
+
+    return () => {
+      if (minTimerRef.current) {
+        clearTimeout(minTimerRef.current);
+        minTimerRef.current = null;
+      }
+    };
+  }, [isLoading, routeKey]);
+
+  useEffect(() => {
+    function clearTimers() {
+      if (maxTimerRef.current) {
+        clearTimeout(maxTimerRef.current);
+        maxTimerRef.current = null;
+      }
+
+      if (minTimerRef.current) {
+        clearTimeout(minTimerRef.current);
+        minTimerRef.current = null;
       }
     }
 
     function startLoading() {
-      clearSafetyTimeout();
-      setPendingRouteKey(latestRouteKeyRef.current);
-      timeoutRef.current = setTimeout(() => {
-        setPendingRouteKey(null);
-        timeoutRef.current = null;
+      clearTimers();
+      startedAtRef.current = Date.now();
+      startedRouteKeyRef.current = latestRouteKeyRef.current;
+      setIsLoading(true);
+      maxTimerRef.current = setTimeout(() => {
+        setIsLoading(false);
+        maxTimerRef.current = null;
       }, MAX_VISIBLE_MS);
     }
 
@@ -63,11 +98,13 @@ export function NavigationLoader() {
     }
 
     window.addEventListener(NAVIGATION_START_EVENT, startLoading);
+    window.addEventListener("popstate", startLoading);
     document.addEventListener("click", handleClick, true);
 
     return () => {
-      clearSafetyTimeout();
+      clearTimers();
       window.removeEventListener(NAVIGATION_START_EVENT, startLoading);
+      window.removeEventListener("popstate", startLoading);
       document.removeEventListener("click", handleClick, true);
     };
   }, []);
