@@ -14,7 +14,7 @@ export type DashboardLink = {
   description: string;
   clickCount: number;
   createdAt: string;
-  qrCodeDataUrl: string;
+  qrCodeUrl: string;
 };
 
 type LinkListProps = {
@@ -70,7 +70,8 @@ export function LinkList({ isSearching = false, links }: LinkListProps) {
                 alt={`QR code for ${link.shortUrl}`}
                 className="h-24 w-24 rounded-lg border border-[#eeeeee]"
                 height={96}
-                src={link.qrCodeDataUrl}
+                src={link.qrCodeUrl}
+                unoptimized
                 width={96}
               />
             </div>
@@ -96,7 +97,7 @@ export function LinkList({ isSearching = false, links }: LinkListProps) {
                 <Info size={18} />
               </Link>
               <DownloadQrButton
-                dataUrl={link.qrCodeDataUrl}
+                dataUrl={link.qrCodeUrl}
                 filename={`short-in-${link.slug}-qr.png`}
                 variant="icon"
               />

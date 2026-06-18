@@ -1,4 +1,3 @@
-import QRCode from "qrcode";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { headers } from "next/headers";
@@ -70,27 +69,21 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     }),
   ]);
 
-  const dashboardLinks: DashboardLink[] = await Promise.all(
-    links.map(async (link) => {
-      const shortUrl = `${baseUrl}/${link.slug}`;
+  const dashboardLinks: DashboardLink[] = links.map((link) => {
+    const shortUrl = `${baseUrl}/${link.slug}`;
 
-      return {
-        id: link.id,
-        shortUrl,
-        slug: link.slug,
-        destinationUrl: link.destinationUrl,
-        title: link.title,
-        description: link.description ?? "",
-        clickCount: link._count.clicks,
-        createdAt: formatTimestamp(link.createdAt),
-        qrCodeDataUrl: await QRCode.toDataURL(shortUrl, {
-          margin: 1,
-          scale: 5,
-          width: 128,
-        }),
-      };
-    }),
-  );
+    return {
+      id: link.id,
+      shortUrl,
+      slug: link.slug,
+      destinationUrl: link.destinationUrl,
+      title: link.title,
+      description: link.description ?? "",
+      clickCount: link._count.clicks,
+      createdAt: formatTimestamp(link.createdAt),
+      qrCodeUrl: getQrCodeUrl(shortUrl, 128),
+    };
+  });
 
   return (
     <main className="dot-grid min-h-screen bg-[#fdfdfd] text-[#202124]">
@@ -153,4 +146,13 @@ function normalizeSearchQuery(value: string | string[] | undefined) {
   const query = Array.isArray(value) ? value[0] : value;
 
   return query?.trim().slice(0, 120) ?? "";
+}
+
+function getQrCodeUrl(shortUrl: string, size: number) {
+  const params = new URLSearchParams({
+    size: String(size),
+    url: shortUrl,
+  });
+
+  return `/api/qr?${params.toString()}`;
 }

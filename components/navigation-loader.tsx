@@ -5,7 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { RouteLoadingOverlay } from "@/components/route-loading-overlay";
 
 const NAVIGATION_START_EVENT = "short-in:navigation-start";
-const MIN_VISIBLE_MS = 650;
+const MIN_VISIBLE_MS = 180;
 const MAX_VISIBLE_MS = 8000;
 
 export function startRouteLoading() {

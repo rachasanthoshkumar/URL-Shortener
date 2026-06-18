@@ -19,7 +19,7 @@ export function DownloadQrButton({
           : "inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-[#171717] px-4 text-sm font-bold text-white shadow-sm transition hover:bg-[#2a2a2a]"
       }
       download={filename}
-      href={dataUrl}
+      href={toDownloadHref(dataUrl, filename)}
       title="Download QR"
       aria-label="Download QR code"
     >
@@ -27,4 +27,17 @@ export function DownloadQrButton({
       {variant === "button" ? "Download QR" : null}
     </a>
   );
+}
+
+function toDownloadHref(href: string, filename: string) {
+  if (!href.startsWith("/api/qr")) {
+    return href;
+  }
+
+  const params = new URLSearchParams(href.split("?")[1] ?? "");
+
+  params.set("download", "1");
+  params.set("filename", filename);
+
+  return `/api/qr?${params.toString()}`;
 }
