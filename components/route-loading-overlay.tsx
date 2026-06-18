@@ -10,7 +10,7 @@ export function RouteLoadingOverlay({ active = true }: RouteLoadingOverlayProps)
       aria-busy={active}
       aria-live="polite"
       className={[
-        "fixed inset-0 z-[100] bg-transparent backdrop-blur-[3px] transition-opacity duration-150",
+        "fixed inset-0 z-[100] bg-white/10 backdrop-blur-[7px] transition-opacity duration-150",
         active ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0",
       ].join(" ")}
       role="status"

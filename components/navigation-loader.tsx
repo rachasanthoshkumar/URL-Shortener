@@ -5,7 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { RouteLoadingOverlay } from "@/components/route-loading-overlay";
 
 const NAVIGATION_START_EVENT = "short-in:navigation-start";
-const MIN_VISIBLE_MS = 450;
+const MIN_VISIBLE_MS = 650;
 const MAX_VISIBLE_MS = 8000;
 
 export function startRouteLoading() {
@@ -79,8 +79,30 @@ export function NavigationLoader() {
       }, MAX_VISIBLE_MS);
     }
 
-    function handleClick(event: MouseEvent) {
+    function handlePointerDown(event: PointerEvent) {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
+
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      const anchor = target.closest<HTMLAnchorElement>("a[href]");
+      if (!anchor || shouldSkipLink(anchor)) {
+        return;
+      }
+
+      startLoading();
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
+
+      if (event.key !== "Enter" && event.key !== " ") {
         return;
       }
 
@@ -99,13 +121,15 @@ export function NavigationLoader() {
 
     window.addEventListener(NAVIGATION_START_EVENT, startLoading);
     window.addEventListener("popstate", startLoading);
-    document.addEventListener("click", handleClick, true);
+    document.addEventListener("pointerdown", handlePointerDown, true);
+    document.addEventListener("keydown", handleKeyDown, true);
 
     return () => {
       clearTimers();
       window.removeEventListener(NAVIGATION_START_EVENT, startLoading);
       window.removeEventListener("popstate", startLoading);
-      document.removeEventListener("click", handleClick, true);
+      document.removeEventListener("pointerdown", handlePointerDown, true);
+      document.removeEventListener("keydown", handleKeyDown, true);
     };
   }, []);
 

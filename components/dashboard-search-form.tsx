@@ -3,6 +3,7 @@
 import { FormEvent, useRef, useState, useTransition } from "react";
 import { Loader2, Search, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { startRouteLoading } from "@/components/navigation-loader";
 
 type PendingAction = "search" | "clear" | null;
 
@@ -17,6 +18,7 @@ export function DashboardSearchForm({ query }: { query: string }) {
     const href = trimmedQuery ? `/dashboard?q=${encodeURIComponent(trimmedQuery)}` : "/dashboard";
 
     setPendingAction(action);
+    startRouteLoading();
     startTransition(() => {
       router.push(href);
     });
