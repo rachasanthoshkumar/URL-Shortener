@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { startRouteLoading } from "@/components/navigation-loader";
 
 export function SignOutButton() {
   const router = useRouter();
@@ -10,6 +11,7 @@ export function SignOutButton() {
     <button
       className="inline-flex h-9 items-center justify-center bg-black px-4 text-sm font-semibold text-white transition hover:bg-[#2a2a2a]"
       onClick={async () => {
+        startRouteLoading();
         await authClient.signOut();
         router.push("/");
         router.refresh();
