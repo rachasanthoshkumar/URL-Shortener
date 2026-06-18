@@ -1,3 +1,4 @@
+import QRCode from "qrcode";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { headers } from "next/headers";
@@ -11,7 +12,6 @@ import { QuickShortenForm } from "@/components/quick-shorten-form";
 import { RefreshOnFocus } from "@/components/refresh-on-focus";
 import { SiteHeader } from "@/components/site-header";
 import { Prisma } from "@/lib/generated/prisma/client";
-import { getQrImagePath } from "@/lib/qr-code";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -70,21 +70,27 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     }),
   ]);
 
-  const dashboardLinks: DashboardLink[] = links.map((link) => {
-    const shortUrl = `${baseUrl}/${link.slug}`;
+  const dashboardLinks: DashboardLink[] = await Promise.all(
+    links.map(async (link) => {
+      const shortUrl = `${baseUrl}/${link.slug}`;
 
-    return {
-      id: link.id,
-      shortUrl,
-      slug: link.slug,
-      destinationUrl: link.destinationUrl,
-      title: link.title,
-      description: link.description ?? "",
-      clickCount: link._count.clicks,
-      createdAt: formatTimestamp(link.createdAt),
-      qrCodeUrl: getQrImagePath(link.slug),
-    };
-  });
+      return {
+        id: link.id,
+        shortUrl,
+        slug: link.slug,
+        destinationUrl: link.destinationUrl,
+        title: link.title,
+        description: link.description ?? "",
+        clickCount: link._count.clicks,
+        createdAt: formatTimestamp(link.createdAt),
+        qrCodeDataUrl: await QRCode.toDataURL(shortUrl, {
+          margin: 1,
+          scale: 5,
+          width: 128,
+        }),
+      };
+    }),
+  );
 
   return (
     <main className="dot-grid min-h-screen bg-[#fdfdfd] text-[#202124]">

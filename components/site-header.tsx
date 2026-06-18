@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand-logo";
-import { SiteHeaderAuthAction } from "@/components/site-header-auth-action";
 import { SignOutButton } from "@/components/sign-out-button";
 
-export function SiteHeader({ isSignedIn }: { isSignedIn?: boolean }) {
+export function SiteHeader({ isSignedIn }: { isSignedIn: boolean }) {
   return (
     <header className="border-b border-[#eeeeee] bg-white/90 backdrop-blur">
       <div className="mx-auto h-14 max-w-[1500px] items-center gap-4 px-6 flex justify-between">
@@ -17,9 +16,7 @@ export function SiteHeader({ isSignedIn }: { isSignedIn?: boolean }) {
           </Link>
         </nav>
         <div className="flex justify-start md:justify-end">
-          {typeof isSignedIn === "undefined" ? (
-            <SiteHeaderAuthAction />
-          ) : isSignedIn ? (
+          {isSignedIn ? (
             <SignOutButton />
           ) : (
             <Link

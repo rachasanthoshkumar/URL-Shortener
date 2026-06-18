@@ -1,4 +1,6 @@
 import { LinkIcon, MousePointerClick, QrCode, Sparkles, UserRound } from "lucide-react";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 import { getAppBaseUrl } from "@/lib/app-url";
 import { QuickShortenForm } from "@/components/quick-shorten-form";
 import { SiteHeader } from "@/components/site-header";
@@ -26,12 +28,18 @@ const features = [
   },
 ];
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+export default async function Home() {
   const baseUrl = getAppBaseUrl();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
   return (
     <main className="dot-grid min-h-screen bg-[#fdfdfd] text-[#202124]">
-      <SiteHeader />
+      <SiteHeader isSignedIn={Boolean(session)} />
 
       <section className="mx-auto flex min-h-[calc(100vh-57px)] max-w-4xl flex-col items-center px-5 pt-20 text-center sm:px-6 sm:pt-24 md:pt-28">
         <div className="inline-flex items-center gap-2 rounded-full border border-[#e8e8e8] bg-white px-3.5 py-1.5 text-xs font-medium text-[#777777] shadow-sm">

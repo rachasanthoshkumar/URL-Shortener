@@ -1,3 +1,4 @@
+import QRCode from "qrcode";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ExternalLink, MousePointerClick } from "lucide-react";
@@ -10,7 +11,6 @@ import { DownloadQrButton } from "@/components/download-qr-button";
 import { prisma } from "@/lib/prisma";
 import { RefreshOnFocus } from "@/components/refresh-on-focus";
 import { SiteHeader } from "@/components/site-header";
-import { getQrImagePath } from "@/lib/qr-code";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -52,7 +52,12 @@ export default async function LinkDetailPage({ params }: LinkDetailPageProps) {
 
   const baseUrl = getAppBaseUrl();
   const shortUrl = `${baseUrl}/${link.slug}`;
-  const qrCodeUrl = getQrImagePath(link.slug, "detail");
+  const qrCodeDataUrl = await QRCode.toDataURL(shortUrl, {
+    errorCorrectionLevel: "H",
+    margin: 2,
+    scale: 8,
+    width: 360,
+  });
 
   return (
     <main className="dot-grid min-h-screen bg-[#fdfdfd] text-[#202124]">
@@ -135,12 +140,11 @@ export default async function LinkDetailPage({ params }: LinkDetailPageProps) {
               alt={`QR code for ${shortUrl}`}
               className="mx-auto mt-6 h-auto w-full max-w-[260px] rounded-xl"
               height={260}
-              src={qrCodeUrl}
-              unoptimized
+              src={qrCodeDataUrl}
               width={260}
             />
             <div className="mt-6">
-              <DownloadQrButton filename={`short-in-${link.slug}-qr.png`} source={qrCodeUrl} />
+              <DownloadQrButton dataUrl={qrCodeDataUrl} filename={`short-in-${link.slug}-qr.png`} />
             </div>
           </aside>
         </div>
